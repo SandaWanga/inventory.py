@@ -1,5 +1,4 @@
 # inventory.py
-
 from tabulate import tabulate
 #========The beginning of the class==========
 class Shoe:
@@ -128,10 +127,17 @@ pass
     by using Python’s tabulate module.
 '''
 
+'''
+Define the function view all  and get shoes from the shoe object then display using tabulate
+'''
 
 def view_all():
     table = []
-    print(tabulate(table, headers=['Country', 'Code', 'Product', 'Cost', 'Quantity'], tablefmt='orgtbl'))
+    for line in shoe_obj:
+      table.append([line.country,line.code, line.product, line.cost, line.quantity])
+    print(tabulate(table, headers = ('Country','Code', 'Product', 'Cost', 'Quantity'), tablefmt='fancy_grid'))
+    file.close()
+
     
 pass
    
@@ -153,7 +159,10 @@ def restock():
     print(f"{lowest_qty.country}, {lowest_qty.code}, {lowest_qty.product}, {lowest_qty.cost}, {lowest_qty.quantity}")
 
     choice = input("Do you want to restock this shoe? (y/n) ")
-    if choice.lower() == 'y':
+    if choice.lower() == 'n':
+         print("No restock needed items ! ")
+         return
+    elif choice.lower() == 'y':
         quantity = int(input(f"Enter quantity to add (currently {lowest_qty.quantity} available): "))
     lowest_qty .quantity += quantity
     with open('inventory.txt', 'r+') as file2:
@@ -172,6 +181,7 @@ def restock():
             file2.write(line)
     file.close
 
+   
 pass
  
 
@@ -265,6 +275,10 @@ while True:
             highest_quantity()
     else:
             print("\nYou have selected an invalid option. ")
+
+            
+
+
 
             
 
