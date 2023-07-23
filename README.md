@@ -5,7 +5,7 @@ class Shoe:
 
     def __init__(self, country, code, product, cost, quantity):
         '''
-        In this function, you must initialise the following attributes:
+        In this function, you must initialize the following attributes:
             ● country,
             ● code,
             ● product,
