@@ -5,7 +5,7 @@ class Shoe:
 
     def __init__(self, country, code, product, cost, quantity):
         '''
-        In this function, you must initialize the following attributes:
+        In this function, you must initialise the following attributes:
             ● country,
             ● code,
             ● product,
@@ -55,6 +55,7 @@ The list will be used to store a list of objects of shoes.
 
 # Read from a file 
 file = open("inventory.txt", "r") 
+file2= open("inventory.txt", "a+")
 
 
 shoe_obj = []
@@ -71,6 +72,7 @@ shoe_list =[]
 
 
 def read_shoes_data():
+
     try:
             # Read the file from the second line
            #lines = file.readlines()[1:]
@@ -88,8 +90,6 @@ def read_shoes_data():
     except FileNotFoundError:
             print("File inventory.txt not available")
             file.close
-        
-         
 pass
 
 '''
@@ -100,23 +100,26 @@ pass
 
 
 def capture_shoes():
+    try:
+                    # request input from the user
+        new_country = input("Please enter the country of your product:\n")
+        new_code = input("Please enter the code of your product:\n")
+        new_product = input("Please enter the name of your product:\n")
+        new_cost = int(input("Please enter the cost of your product:\n"))
+        new_quantity = int(input("Please enter the quantity of your product :\n"))
+        shoe = Shoe( new_country, new_code, new_product, new_cost,  new_quantity)
+        shoe_obj.append(shoe)
+
+        file2.write(f'\n{new_country},{new_code},{new_product},{new_cost},{new_quantity}')
+        print("\n New  product has been loaded!\n")
+        file2.close()
+        
+        
+    except ValueError :
+        print("Please enter a vallid number ")
+        file2.close()
+            
     
-       # request input from the user
-    new_country = input("Please enter the country of your product:\n")
-    new_code = input("Please enter the code of your product:\n")
-    new_product = input("Please enter the name of your product:\n")
-    new_cost = int(input("Please enter the cost of your product:\n"))
-    new_quantity = int(input("Please enter the quantity of your product :\n"))
-
-# Append on the file 
-    file2 = open("inventory.txt", "a") 
-    line =(f'{new_country},{new_code},{new_product},{new_cost},{new_quantity}')
-
-# Add a new line for the shoes cptured
-    file2.write('\n')
-    for i in line:
-        file2.write(i)
-    file2.close
         
 pass
     
@@ -132,6 +135,7 @@ Define the function view all  and get shoes from the shoe object then display us
 '''
 
 def view_all():
+
     table = []
     for line in shoe_obj:
       table.append([line.country,line.code, line.product, line.cost, line.quantity])
@@ -155,31 +159,36 @@ pass
 
 
 def restock():
-    lowest_qty = min(shoe_obj, key=lambda x: x.quantity)
-    print(f"{lowest_qty.country}, {lowest_qty.code}, {lowest_qty.product}, {lowest_qty.cost}, {lowest_qty.quantity}")
+    try:
 
-    choice = input("Do you want to restock this shoe? (y/n) ")
-    if choice.lower() == 'n':
-         print("No restock needed items ! ")
-         return
-    elif choice.lower() == 'y':
-        quantity = int(input(f"Enter quantity to add (currently {lowest_qty.quantity} available): "))
-    lowest_qty .quantity += quantity
-    with open('inventory.txt', 'r+') as file2:
-        lines = file2.readlines()
+        lowest_qty = min(shoe_obj, key=lambda x: x.quantity)
+        print(f"{lowest_qty.country}, {lowest_qty.code}, {lowest_qty.product}, {lowest_qty.cost}, {lowest_qty.quantity}")
 
-        #sets the file's current position
-        file2.seek(0)
-        file2.write(lines[0])
+        choice = input("Do you want to restock this shoe? (y/n) ")
+        if choice.lower() == 'n':
+            print("No restock needed items ! ")
+            return
+        elif choice.lower() == 'y':
+            quantity = int(input(f"Enter quantity to add (currently {lowest_qty.quantity} available): "))
+        lowest_qty .quantity += quantity
+        with open('inventory.txt', 'r+') as file2:
+            lines = file2.readlines()
 
-        # Read the file from the second line
-        for line in lines[1:]:
-            data = line.strip().split(',')
-            if data[1] == lowest_qty .code:
-                data[4] = str(lowest_qty .quantity)
-                line = ','.join(data) + '\n'
-            file2.write(line)
-    file.close
+            #sets the file's current position
+            file2.seek(0)
+            file2.write(lines[0])
+
+            # Read the file from the second line
+            for line in lines[1:]:
+                data = line.strip().split(',')
+                if data[1] == lowest_qty .code:
+                    data[4] = str(lowest_qty .quantity)
+                    line = ','.join(data) + '\n'
+                file2.write(line)
+                
+    except ValueError :
+        print("Please enter a vallid number ")
+    file.close()
 
    
 pass
@@ -191,12 +200,14 @@ pass
 '''
 
 def search_shoe():
-    search_shoe = input("\nPlease enter the code you are searching for:\n\n")
+    search_code = input("\nPlease enter the code you are searching for:\n\n")
     with open("inventory.txt", "r") as file:
         lines = file.readlines()[1:]
     for shoe in lines:
-        if shoe.find(search_shoe) != -1:
+        if shoe.find(search_code) != -1:
               print(shoe)
+    else:
+             print("This code does not exist on inventory.txt")
     file.close
 
 pass
@@ -209,11 +220,14 @@ pass
 '''
 
 def value_per_item():
+    
+    table = []
     for line in shoe_obj:
         value = int(line.get_cost()) * int(line.get_quantity())
-        print(f'R{value}\n')
-        #print(f'{line.get_cost()}*{line.get_quantity()} =  R{value}\n')
-        file.close
+        table.append([line.country, line.product, value])
+    print(tabulate(table, headers=['country', 'Product', 'Total Value'], tablefmt='fancy_grid'))
+
+    file.close()
 
 pass
 
@@ -224,10 +238,11 @@ pass
 '''
 
 def highest_quantity():
+
      # Mark item as sale 
     print("\n This item is on sale!! ")
     print(max(shoe_obj,key=lambda item: item.quantity ))
-    file.close
+    file.close()
 
     
    
@@ -242,41 +257,49 @@ pass
 
 read_shoes_data()
 while True:
-    menu = int(input(
-            "\n1. Capture Shoes"
-    "\n2. View All"
-    "\n3. Restock "
-    "\n4. Search"
-    "\n5. View Item Values"
-    "\n6. View Sale Items"
-    "\nPlease select from the menu below:"
+    try:
+        menu = int(input(
+                "\n1. Capture Shoes"
+        "\n2. View All"
+        "\n3. Restock "
+        "\n4. Search"
+        "\n5. View Item Values"
+        "\n6. View Sale Items"
+        "\n  Choose any number greater than 6 to EXIT! "
+        "\nPlease select from the menu below:"
+                
+        )
+        
+        )
+        
+
+        if menu == 1:
+                capture_shoes()
+
+        elif menu == 2:
+                view_all()
+
+        elif menu == 3:
+                restock()
+
+        elif menu == 4:
+                search_shoe()
+
+        elif menu == 5:
+                value_per_item()
+
+        elif menu == 6:
+                highest_quantity()
+        elif menu > 6:
+             print("You can no longer make changers on inventory.txt")
+             break
+  
+    except ValueError:
+         print("\nYou have selected an invalid option. ")
+           
             
-    )
-    
-     )
-     
 
-    if menu == 1:
-            capture_shoes()
 
-    elif menu == 2:
-            view_all()
-
-    elif menu == 3:
-            restock()
-
-    elif menu == 4:
-            search_shoe()
-
-    elif menu == 5:
-            value_per_item()
-
-    elif menu == 6:
-            highest_quantity()
-    else:
-            print("\nYou have selected an invalid option. ")
-
-            
 
 
 
